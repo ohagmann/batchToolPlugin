@@ -29,4 +29,4 @@ batchTool ist aus dem Plugin batchTool/openCirt 1.7.3 hervorgegangen (Repository
 ### Geprüft (Linux)
 - Ordner mit 8 Zeichnungen des openCirt-Beispielprojekts (Vorlagen und Quellzeichnung), Text-Tab (`DECKBLATT` → `BTTEST-TEXT`) und Attribute-Tab (Tag `OC_BEZEICHNUNG`, `Ventilator` → `BTTEST`, unsichtbare Attribute eingeschlossen) mit 1.7.3 und 2.0.0 auf zwei identischen Kopien: beide ersetzen 4 Texte und 1 Attribut, verarbeiten 8 Dateien, legen 8 Sicherungen an; die Auszüge aller Zeichnungen (`fulldump`, 2.224 Attribute) sind byteidentisch. Tabs und Feldreihenfolge wie in 1.7.3.
 - openCirt und batchTool 2.0.0 in einer Sitzung geladen, batchTool entladen und erneut geladen: BricsCAD läuft weiter.
-- Windows-Build steht aus.
+- Windows-Build am 2026-10-09 vom Anwender gebaut (MSVC 19.44, Qt 6.8.3): `batchtool-2.0.0.brx` liegt unter `dist/windows/`; Plugin unter Windows geladen.
