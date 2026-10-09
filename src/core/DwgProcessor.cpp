@@ -537,7 +537,7 @@ void BatchProcessingEngine::processFileInternal(const QString& filePath) {
     
     if (success) {
         m_statistics.processedFiles++;
-        emit fileProcessed(filePath, true, "File processed successfully");
+        emit fileProcessed(filePath, true, "File processed successfully" + m_currentProcessor->note());
     } else {
         m_statistics.errorFiles++;
         QString error = m_currentProcessor->getLastError();
@@ -820,6 +820,7 @@ bool DwgFileProcessor::processFile(const ProcessingOptions& options, ProcessingS
 
     // Speichere die Options für createBackup()
     m_currentOptions = options;
+    m_note.clear();
     
     // Create backup if requested
     if (options.createBackups) {
@@ -1476,11 +1477,18 @@ bool DwgFileProcessor::performTextReplacement(const ProcessingOptions& options, 
         }
         
         // Process all entities
+        int seen = 0, texts = 0, openFail = 0;
+        Acad::ErrorStatus firstFail = Acad::eOk;
         for (pIter->start(); !pIter->done(); pIter->step()) {
             AcDbEntity* pEnt;
+            ++seen;
             es = pIter->getEntity(pEnt, AcDb::kForWrite);
-            
-            if (es != Acad::eOk) continue;
+            if (es != Acad::eOk) {
+                ++openFail;
+                if (firstFail == Acad::eOk) firstFail = es;
+                continue;
+            }
+            if (pEnt->isKindOf(AcDbText::desc()) || pEnt->isKindOf(AcDbMText::desc())) ++texts;
             
             // Process DBText
             if (options.processSingleLineText && pEnt->isKindOf(AcDbText::desc())) {
@@ -1542,6 +1550,13 @@ bool DwgFileProcessor::performTextReplacement(const ProcessingOptions& options, 
         }
         
         delete pIter;
+        // Je Datei eine Zeile im Protokoll: was ersetzt wurde, und ob sich
+        // Objekte nicht zum Schreiben oeffnen liessen (sonst bliebe das stumm).
+        m_note += QString(" | Text: %1 von %2 Texten ersetzt").arg(replacementCount).arg(texts);
+        if (openFail > 0) {
+            m_note += QString(", %1 von %2 Objekten nicht zum Schreiben geoeffnet (Fehler %3)")
+                      .arg(openFail).arg(seen).arg(int(firstFail));
+        }
         
         // Commit transaction
         if (!commitTransaction()) {
@@ -1614,10 +1629,11 @@ bool DwgFileProcessor::performAttributeReplacement(const ProcessingOptions& opti
         }
         
         // Process all entities
+        int attrs = 0, openFail = 0;
+        Acad::ErrorStatus firstFail = Acad::eOk;
         for (pIter->start(); !pIter->done(); pIter->step()) {
             AcDbEntity* pEnt;
             es = pIter->getEntity(pEnt, AcDb::kForRead);
-            
             if (es != Acad::eOk) continue;
             
             // Process Block References
@@ -1661,8 +1677,13 @@ bool DwgFileProcessor::performAttributeReplacement(const ProcessingOptions& opti
                             AcDbObjectId attrId = pAttrIter->objectId();
                             AcDbAttribute* pAttr;
                             
+                            ++attrs;
                             es = acdbOpenObject(pAttr, attrId, AcDb::kForWrite);
-                            if (es != Acad::eOk) continue;
+                            if (es != Acad::eOk) {
+                                ++openFail;
+                                if (firstFail == Acad::eOk) firstFail = es;
+                                continue;
+                            }
                             
                             // Check attribute visibility/type filters
                             if (pAttr->isInvisible() && !options.invisibleAttributesCheck) {
@@ -1720,6 +1741,11 @@ bool DwgFileProcessor::performAttributeReplacement(const ProcessingOptions& opti
         }
         
         delete pIter;
+        m_note += QString(" | Attribute: %1 von %2 ersetzt").arg(replacementCount).arg(attrs);
+        if (openFail > 0) {
+            m_note += QString(", %1 nicht zum Schreiben geoeffnet (Fehler %2)")
+                      .arg(openFail).arg(int(firstFail));
+        }
         
         // Commit transaction
         if (!commitTransaction()) {

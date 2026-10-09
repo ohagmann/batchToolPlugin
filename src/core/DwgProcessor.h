@@ -214,6 +214,8 @@ public:
     bool isReadOnly() const;
     bool isValid() const { return m_isValid; }
     QString getLastError() const { return m_lastError; }
+    /// Diagnose der letzten Datei: besuchte Objekte, gescheiterte Oeffnungen, Ersetzungen
+    QString note() const { return m_note; }
     
     // LISP Validation (public for UI access)
     static bool validateLispSyntax(const QString& scriptPath, QString& errorMsg);
@@ -223,6 +225,7 @@ private:
     QString m_filePath;
     bool m_isValid = false;
     QString m_lastError;
+    QString m_note;
     
     // BRX API Objekte
     AcDbDatabase* m_database = nullptr;

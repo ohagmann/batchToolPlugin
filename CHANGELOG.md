@@ -9,6 +9,9 @@ batchTool ist aus dem Plugin batchTool/openCirt 1.7.3 hervorgegangen (Repository
 
 ## [2.0.0] - 2026-10-09
 
+### Added
+- **Ergebnis je Datei im Protokoll.** Hinter „File processed successfully" steht jetzt, was in der Datei passiert ist, z.B. `| Text: 1 von 10 Texten ersetzt | Attribute: 1 von 133 ersetzt`. Ließen sich Objekte nicht zum Schreiben öffnen (gesperrter Layer o.ä.), steht das mit Anzahl und Fehlercode dabei; bisher wurden solche Objekte stumm übersprungen.
+
 ### Changed
 - **Eigenes Plugin.** `batchtool-<Version>.brx` (Windows) bzw. `batchtool-<Version>.lrx` (Linux) mit dem Befehl `BATCHTOOL` und der Kurzform `BT`. Die Kurzform ist ein echter Befehl und braucht keinen Eintrag in der `default.pgp`. openCirt und batchTool lassen sich gleichzeitig laden.
 - Fenstertitel „batchTool <Version>", Über-Dialog mit den Befehlen.
@@ -24,7 +27,6 @@ batchTool ist aus dem Plugin batchTool/openCirt 1.7.3 hervorgegangen (Repository
 - `src/ui/Theming.*`, `src/windows_fix.h` und `src/mfc_stubs/` sind in beiden Repositories gleich; eine Korrektur dort gehört in beide.
 
 ### Geprüft (Linux)
-- Ordner mit 8 Zeichnungen des openCirt-Beispielprojekts (Vorlagen und Quellzeichnung), Text-Tab und Attribute-Tab aktiv, mit 1.7.3 und 2.0.0 auf zwei identischen Kopien: beide verarbeiten 8 Dateien, legen 8 Sicherungen an, die Attributauszüge (`fulldump`, 2.224 Attribute) sind byteidentisch. Tabs und Feldreihenfolge wie in 1.7.3.
+- Ordner mit 8 Zeichnungen des openCirt-Beispielprojekts (Vorlagen und Quellzeichnung), Text-Tab (`DECKBLATT` → `BTTEST-TEXT`) und Attribute-Tab (Tag `OC_BEZEICHNUNG`, `Ventilator` → `BTTEST`, unsichtbare Attribute eingeschlossen) mit 1.7.3 und 2.0.0 auf zwei identischen Kopien: beide ersetzen 4 Texte und 1 Attribut, verarbeiten 8 Dateien, legen 8 Sicherungen an; die Auszüge aller Zeichnungen (`fulldump`, 2.224 Attribute) sind byteidentisch. Tabs und Feldreihenfolge wie in 1.7.3.
 - openCirt und batchTool 2.0.0 in einer Sitzung geladen, batchTool entladen und erneut geladen: BricsCAD läuft weiter.
-- **Offen:** Im Test haben Text- und Attributersetzung weder mit 1.7.3 noch mit 2.0.0 etwas ersetzt (Ziele im Modellbereich, auch mit „Process invisible attributes"): die Verarbeitung meldet 8 Dateien ohne Fehler und 0 Ersetzungen. Die Engine (`DwgProcessor`) ist seit 1.7.3 unverändert, die Ursache liegt also nicht in der Teilung; siehe KNOWN_ISSUES.md Abschnitt 3.
 - Windows-Build steht aus.

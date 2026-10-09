@@ -30,7 +30,7 @@ batchTool ist als BRX-Modul aufgebaut (Windows: `.brx`, Linux: `.lrx`), das als 
 
 ### Kernkomponenten
 
-**BatchProcessingEngine** (`core/DwgProcessor.cpp`) – Orchestriert die Batch-Verarbeitung. Öffnet DWG-Dateien über die BRX-Seitendatenbank (AcDbDatabase), führt Text-/Attribut-/Layer-Operationen durch und speichert die Änderungen. LISP-Verarbeitung wird an den LispProcessExecutor delegiert.
+**BatchProcessingEngine** (`core/DwgProcessor.cpp`) – Orchestriert die Batch-Verarbeitung. Öffnet DWG-Dateien über die BRX-Seitendatenbank (AcDbDatabase), führt Text-/Attribut-/Layer-Operationen durch und speichert die Änderungen. LISP-Verarbeitung wird an den LispProcessExecutor delegiert. Je Datei meldet `DwgFileProcessor::note()` ins Protokoll, was ersetzt wurde und ob sich Objekte nicht zum Schreiben öffnen ließen (Anzahl und Fehlercode) – solche Objekte werden übersprungen, und ohne die Zeile bliebe das unsichtbar.
 
 **LispProcessExecutor** (`core/LispProcessExecutor.cpp`) – Ausführung für den LISP-Tab. Generiert eine SCR-Datei mit dem Standard-CAD-Batch-Pattern (`_.OPEN → load → call → _QSAVE → _.CLOSE`) und führt sie über `acedCommand(_.SCRIPT)` in der aktuellen BricsCAD-Instanz aus. Systemvariablen (FILEDIA, CMDECHO, EXPERT) werden vor der Ausführung via `acedSetVar` gesetzt und am Ende der SCR wiederhergestellt.
 

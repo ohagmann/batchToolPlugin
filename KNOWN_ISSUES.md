@@ -1,6 +1,6 @@
 # Bekannte Probleme
 
-Hier stehen Probleme, die beim Einsatz von batchTool auftreten, deren Ursache aber nicht im Plugin liegt, sondern in BricsCAD oder im Betriebssystem. Abschnitt 1 betrifft Windows, Abschnitt 2 und 3 Linux. Für Änderungen und behobene Fehler im Plugin selbst siehe [CHANGELOG.md](CHANGELOG.md), für Bedienfehler die [Bedienungsanleitung](sample_project/BEDIENUNGSANLEITUNG.md), Abschnitt 12.
+Hier stehen Probleme, die beim Einsatz von batchTool auftreten, deren Ursache aber nicht im Plugin liegt, sondern in BricsCAD oder im Betriebssystem. Abschnitt 1 betrifft Windows, Abschnitt 2 Linux. Für Änderungen und behobene Fehler im Plugin selbst siehe [CHANGELOG.md](CHANGELOG.md), für Bedienfehler die [Bedienungsanleitung](sample_project/BEDIENUNGSANLEITUNG.md), Abschnitt 12.
 
 ---
 
@@ -102,22 +102,3 @@ Für den LISP-Tab gibt es im Plugin keine. Rechenintensive Skripte über viele Z
 
 - Die Einstellungen der LISP-Umgebung (`liblispex.so.cfg`, `LISPINIT`), `SDI=1`, ein ausdrückliches `(gc)` oder `vlax-release-object` ändern nichts.
 - `NEXTFIBERWORLD=0`: danach führt BricsCAD Skripte, die beim Start mit `-b` übergeben werden, nicht mehr aus. Das trifft den PDF-Publish.
-
----
-
-## 3. Linux: Text- und Attributersetzung ohne Wirkung (offen, Stand 2026-10-09)
-
-**Betrifft:** batchTool 1.7.3 und 2.0.0 unter Linux (BricsCAD V26.2.07). Unter Windows nicht geprüft.
-
-### Symptom
-
-Ein Lauf mit aktivem Text-Tab (Suchen/Ersetzen eines Texts im Modellbereich) und aktivem Attribute-Tab (Tag im Modellbereich, auch mit „Process invisible attributes") meldet „Processing Complete", alle Dateien „processed successfully", Sicherungskopien angelegt – aber „Text Replacements: 0" und „Attribute Replacements: 0". Die Zeichnungen sind unverändert.
-
-### Stand der Untersuchung
-
-Die Verarbeitung (`core/DwgProcessor.cpp`) öffnet jede Zeichnung als Side-Database, startet eine Transaktion auf deren Transaktionsmanager und öffnet die Objekte des Modellbereichs anschließend einzeln zum Schreiben (`getEntity(…, kForWrite)`); schlägt das Öffnen fehl, wird das Objekt still übersprungen. Verdacht: Dieses Öffnen scheitert unter Linux innerhalb der Transaktion, sodass kein Objekt bearbeitet wird. Der Code ist seit 1.7.3 unverändert; mit der Teilung in zwei Plugins (2.0.0) hat das nichts zu tun. Zum Vergleich: openCirt arbeitet auf der Side-Database ohne Transaktion und ändert Attribute unter Linux zuverlässig.
-
-### Abhilfe
-
-Noch keine. Wer die Funktion unter Linux braucht, prüft das Ergebnis nach dem Lauf; unter Windows ist das Verhalten zu prüfen.
-
