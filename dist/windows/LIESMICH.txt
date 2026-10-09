@@ -1,0 +1,16 @@
+batchtool-<Version>.brx - batchTool fuer BricsCAD V26 unter Windows
+====================================================================
+
+Der Dateiname traegt die Version, z.B. batchtool-2.0.0.brx.
+
+Laden
+  1. Die Datei an einen festen Ort kopieren, z.B. C:\BricsCAD Plugins\
+  2. In BricsCAD: APPLOAD, batchtool-<Version>.brx waehlen, laden
+     (Startup Suite: nach einem Versionswechsel den Eintrag umstellen)
+  3. Befehl: BATCHTOOL (Kurzform BT)
+
+Weitere Dateien sind nicht noetig.
+
+Bis 1.7.3 enthielt die Datei zusaetzlich die GA-Planungssoftware openCirt.
+Die gibt es seit 2.0 als eigenes Plugin (opencirt-<Version>.brx, Befehl
+OPENCIRT).
